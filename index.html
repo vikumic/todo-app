@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Vikumic Todo</title>
+
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family:Arial, sans-serif;
+    }
+
+    body{
+      min-height:100vh;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      background:linear-gradient(135deg,#0f172a,#111827,#1e293b);
+      padding:20px;
+      color:white;
+    }
+
+    .container{
+      width:100%;
+      max-width:420px;
+      background:rgba(255,255,255,0.08);
+      backdrop-filter:blur(12px);
+      border:1px solid rgba(255,255,255,0.1);
+      border-radius:24px;
+      padding:25px;
+      box-shadow:0 0 30px rgba(0,0,0,0.4);
+    }
+
+    h1{
+      text-align:center;
+      margin-bottom:20px;
+      font-size:32px;
+      letter-spacing:1px;
+    }
+
+    .input-box{
+      display:flex;
+      gap:10px;
+      margin-bottom:20px;
+    }
+
+    .input-box input{
+      flex:1;
+      padding:14px;
+      border:none;
+      outline:none;
+      border-radius:14px;
+      background:rgba(255,255,255,0.12);
+      color:white;
+      font-size:15px;
+    }
+
+    .input-box input::placeholder{
+      color:#cbd5e1;
+    }
+
+    .input-box button{
+      padding:14px 18px;
+      border:none;
+      border-radius:14px;
+      background:#38bdf8;
+      color:white;
+      cursor:pointer;
+      font-weight:bold;
+      transition:0.3s;
+    }
+
+    .input-box button:hover{
+      background:#0ea5e9;
+      transform:scale(1.05);
+    }
+
+    ul{
+      list-style:none;
+    }
+
+    li{
+      background:rgba(255,255,255,0.08);
+      padding:14px;
+      border-radius:14px;
+      margin-bottom:12px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      animation:fade 0.3s ease;
+    }
+
+    li.completed span{
+      text-decoration:line-through;
+      opacity:0.6;
+    }
+
+    .actions{
+      display:flex;
+      gap:8px;
+    }
+
+    .done-btn,
+    .delete-btn{
+      border:none;
+      padding:8px 10px;
+      border-radius:10px;
+      cursor:pointer;
+      color:white;
+      transition:0.3s;
+    }
+
+    .done-btn{
+      background:#22c55e;
+    }
+
+    .done-btn:hover{
+      background:#16a34a;
+    }
+
+    .delete-btn{
+      background:#ef4444;
+    }
+
+    .delete-btn:hover{
+      background:#dc2626;
+    }
+
+    .counter{
+      margin-top:15px;
+      text-align:center;
+      opacity:0.8;
+      font-size:14px;
+    }
+
+    @keyframes fade{
+      from{
+        opacity:0;
+        transform:translateY(10px);
+      }
+      to{
+        opacity:1;
+        transform:translateY(0);
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+    <h1>✨ Todo App</h1>
+
+    <div class="input-box">
+      <input type="text" id="taskInput" placeholder="Enter your task...">
+      <button onclick="addTask()">Add</button>
+    </div>
+
+    <ul id="taskList"></ul>
+
+    <div class="counter">
+      Tasks: <span id="taskCount">0</span>
+    </div>
+  </div>
+
+  <script>
+    let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+
+    const taskList = document.getElementById("taskList");
+    const taskCount = document.getElementById("taskCount");
+
+    function saveTasks(){
+      localStorage.setItem("tasks", JSON.stringify(tasks));
+    }
+
+    function renderTasks(){
+      taskList.innerHTML = "";
+
+      tasks.forEach((task,index)=>{
+        const li = document.createElement("li");
+
+        if(task.completed){
+          li.classList.add("completed");
+        }
+
+        li.innerHTML = `
+          <span>${task.text}</span>
+
+          <div class="actions">
+            <button class="done-btn" onclick="toggleTask(${index})">✓</button>
+            <button class="delete-btn" onclick="deleteTask(${index})">✕</button>
+          </div>
+        `;
+
+        taskList.appendChild(li);
+      });
+
+      taskCount.innerText = tasks.length;
+
+      saveTasks();
+    }
+
+    function addTask(){
+      const input = document.getElementById("taskInput");
+      const text = input.value.trim();
+
+      if(text === "") return;
+
+      tasks.push({
+        text:text,
+        completed:false
+      });
+
+      input.value = "";
+      renderTasks();
+    }
+
+    function toggleTask(index){
+      tasks[index].completed = !tasks[index].completed;
+      renderTasks();
+    }
+
+    function deleteTask(index){
+      tasks.splice(index,1);
+      renderTasks();
+    }
+
+    renderTasks();
+  </script>
+
+</body>
+</html>
